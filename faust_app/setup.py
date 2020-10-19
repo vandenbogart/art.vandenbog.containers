@@ -4,6 +4,7 @@ requires = [
     "faust",
     "yarl<1.6.0,>=1.0",
     "multidict<5.0,>=4.5",
+    "gitpython"
 ]
 
 setup(

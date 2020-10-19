@@ -16,6 +16,7 @@ services:
     ports:
       - "8084:80"
       - "8000:8000"
+      - "6066:6066"
     volumes:
       - ./scripts:/faust/scripts
   zookeeper:
