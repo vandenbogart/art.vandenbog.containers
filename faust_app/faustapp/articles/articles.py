@@ -1,32 +1,57 @@
 import shutil
 import os
 import faust
+from bs4 import BeautifulSoup
 from faust.web import Request, Response, View
 from faustapp.app import app
 from git import Repo
 
-topic = app.topic('articles')
+class Article(faust.Record):
+    title: str
+    filename: str
+    html: str
+
+topic = app.topic('articles', key_type=str, value_type=Article)
+
+articles_table = app.Table(
+        'articles_table',
+        default=None,
+        key_type=str,
+        value_type=Article
+)
 
 def handle_error(func, path, execinfo):
     print('Unable remove directory' + path)
 
-@app.page('/articles/')
-class process(View):
+@app.page('/publish/')
+class publish_articles(View):
     async def post(self, request: Request) -> Response:
         repo_name = 'temp_repo'
         print("Cloning articles repository...")
+        shutil.rmtree(repo_name, ignore_errors=True) 
         Repo.clone_from("https://github.com/vandenbogart/art.vandenbog.articles.git", repo_name)
         with os.scandir(repo_name) as entries:
             for entry in entries:
                 if entry.is_file():
                     with open(entry, 'r') as f:
                         data = f.read()
-                        print(entry.name)
+                        soup = BeautifulSoup(data, 'html.parser')
+                        print(soup.title.string)
                         print(data)
+                        await topic.send(key=entry.name, value=Article(title=soup.title.string, filename=entry.name, html=data))
         print("Cleaning up temporary files...")
         shutil.rmtree(repo_name, onerror=handle_error) 
         return self.json({'error': None})
 
+@app.page('/articles/{word}')
+@app.table_route(table=articles_table, match_info='word')
+async def get_articles(web, request, word):
+    return web.json(list(articles_table.values()))
+
+@app.agent(topic)
+async def process_articles(articles):
+    async for article in articles.group_by(Article.filename):
+        articles_table[article.filename] = article
 
 
 

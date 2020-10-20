@@ -1,10 +1,12 @@
 from setuptools import setup, find_packages
 
 requires = [
-    "faust",
+    "cython",
+    "faust[rocksdb]",
     "yarl<1.6.0,>=1.0",
     "multidict<5.0,>=4.5",
-    "gitpython"
+    "gitpython",
+    "beautifulsoup4",
 ]
 
 setup(

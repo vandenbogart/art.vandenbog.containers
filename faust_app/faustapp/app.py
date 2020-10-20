@@ -4,11 +4,12 @@ import faust
 
 
 app = faust.App(
-    'user-service-app',
+    'vandenbogart-faust',
     version=1,
     autodiscover=True,
     origin='faustapp',
-    broker=os.environ["KAFKA_BOOTSTRAP_SERVER"]
+    broker=os.environ["KAFKA_BOOTSTRAP_SERVER"],
+    store='rocksdb://'
 )
 
 def main() -> None:
