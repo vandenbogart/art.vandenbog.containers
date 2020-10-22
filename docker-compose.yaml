@@ -17,6 +17,7 @@ services:
       - "8084:80"
       - "8000:8000"
       - "6066:6066"
+      - "50101:50101"
     volumes:
       - ./scripts:/faust/scripts
   zookeeper:

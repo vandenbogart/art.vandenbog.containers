@@ -33,4 +33,4 @@ RUN python3 setup.py develop
 # add source code
 COPY . /app
 
-ENTRYPOINT dockerize -wait tcp://kafka:9092 -timeout 60s faust_app worker -l info
+ENTRYPOINT dockerize -wait tcp://kafka:9092 -timeout 60s faust_app --debug worker -l info
