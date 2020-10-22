@@ -13,9 +13,9 @@ class Article(faust.Record):
     title: str
     filename: str
     html: str
+    created_date: datetime
+    last_modified_date: datetime
     deleted: bool = False
-    created: datetime
-    last_modified: datetime
 
 topic = app.topic('articles', key_type=str, value_type=Article)
 
@@ -29,8 +29,8 @@ articles_table = app.Table(
 def handle_error(func, path, execinfo):
     print('Unable remove directory' + path)
 
-@app.page('/publish/')
-class publish_articles(View):
+@app.page('/reconcile/')
+class reconcile_articles(View):
     async def post(self, request: Request) -> Response:
         repo_name = 'temp_repo'
         print("Cloning articles repository...")
@@ -39,14 +39,14 @@ class publish_articles(View):
         with os.scandir(repo_name) as entries:
             for entry in entries:
                 if entry.is_file():
-                    last_modified = repo.git.log('-1', format='%ci', 'a_good_time.html')
-                    print(last_modified)
+                    last_modified = repo.git.log('-1', 'a_good_time.html')
+#                     print(last_modified)
                     with open(entry, 'r') as f:
                         data = f.read()
                         soup = BeautifulSoup(data, 'html.parser')
                         print(soup.title.string)
                         print(data)
-                        #await topic.send(key=entry.name, value=Article(title=soup.title.string, filename=entry.name, html=data))
+#                         await topic.send(key=entry.name, value=Article(title=soup.title.string, filename=entry.name, html=data))
         print("Cleaning up temporary files...")
         shutil.rmtree(repo_name, onerror=handle_error) 
         return self.json({'error': None})
@@ -59,7 +59,5 @@ async def get_articles(web, request, word):
 @app.agent(topic)
 async def process_articles(articles):
     async for article in articles.group_by(Article.filename):
+        print(article.filename)
         articles_table[article.filename] = article
-
-
-

@@ -1,7 +1,7 @@
 import faust
 from faustapp.app import app
 
-topic = app.topic('user_data')
+topic = app.topic('user_data_3')
 
 
 @app.agent(topic)

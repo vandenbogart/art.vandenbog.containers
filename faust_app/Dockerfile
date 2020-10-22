@@ -22,6 +22,8 @@ WORKDIR /rocksdb
 RUN export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}${CPLUS_INCLUDE_PATH:+:}`pwd`/include/
 RUN export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}${LD_LIBRARY_PATH:+:}`pwd`/build/
 RUN export LIBRARY_PATH=${LIBRARY_PATH}${LIBRARY_PATH:+:}`pwd`/build/
+
+
 RUN pip3 install "Cython>=0.20"
 RUN pip3 install python-rocksdb
 
