@@ -20,6 +20,12 @@ remove:
 stop:
 	docker-compose stop
 
+lint:
+	python3 -m pylint faust_app/faustapp
+
+dev:
+	docker-compose up --detach --build faust
+
 run-dev: build run
 
 clean: stop remove

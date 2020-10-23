@@ -1,6 +1,6 @@
+'''Faust application definition'''
 import os
 import faust
-
 
 
 app = faust.App(
@@ -13,4 +13,5 @@ app = faust.App(
 )
 
 def main() -> None:
+    "Wrapper for app.main"
     app.main()
