@@ -1,0 +1,39 @@
+
+.dashboard {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: stretch;
+
+}
+
+.dashboard__left {
+    flex: 1 1 auto;
+    background-color: lightgoldenrodyellow;
+
+}
+
+.dashboard__left__menu {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    background-color: lightcyan;
+}
+
+.dashboard__left__menu__item {
+    flex: 1 1 auto;
+    background-color: pink;
+    margin-top: 1rem;
+}
+
+.dashboard__right {
+    flex: 3 1 auto;
+    background-color: lightblue;
+}
+
+.dashboard__right__page-display-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+

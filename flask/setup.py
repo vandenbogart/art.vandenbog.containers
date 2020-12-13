@@ -2,18 +2,18 @@ from setuptools import setup, find_packages
 
 requires = [
     "requests",
-    "faust[debug]",
-    "yarl<1.6.0,>=1.0",
-    "multidict<5.0,>=4.5",
-    "gitpython",
+    "flask",
+    "kafka-python",
     "beautifulsoup4",
+    "pymongo",
+    "gitpython",
     "pylint",
 ]
 
 setup(
-    name='faust_app',
+    name='flask_app',
     version='1.0',
-    description='faust app  with docker container',
+    description='flask app with docker container',
     author='Eric Bogard',
     url='',
     packages=find_packages(),
@@ -22,9 +22,4 @@ setup(
     tests_require=[],
     setup_requires=[],
     dependency_links=[],
-    entry_points={
-        'console_scripts': [
-            'faust_app = faustapp.app:main',
-        ],
-    },
 )

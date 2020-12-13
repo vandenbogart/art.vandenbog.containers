@@ -1,25 +1,31 @@
 version: '3'
 services:
-  faust:
+  article_consumer:
+    build: ./article_consumer
+    depends_on:
+      - zookeeper
+      - kafka
+      - mongo
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=kafka:9092
+      - MONGO_CONNECT=mongodb://root:example@mongo:27017
+      - DATABASE_NAME=articles_db
+      - COLLECTION_NAME=articles
+  flask:
     tty: true
-    build: ./faust_app
-    container_name: faust
+    build: ./flask
+    container_name: flask
+    scale: 1
     depends_on:
       - zookeeper
       - kafka
     environment:
-      - WORKER=app
-      - WORKER_PORT=6066
-      - KAFKA_BOOTSTRAP_SERVER=kafka://kafka:9092
+      - MONGO_CONNECT=mongodb://root:example@mongo:27017
+      - KAFKA_BOOTSTRAP_SERVER=kafka:9092
       - KAFKA_BOOSTRAP_SERVER_NAME=kafka
       - KAFKA_BOOSTRAP_SERVER_PORT=9092
     ports:
-      - "8084:80"
-      - "8000:8000"
-      - "6066:6066"
-      - "50101:50101"
-    volumes:
-      - ./scripts:/faust/scripts
+      - 5000:5000
   zookeeper:
     image: "confluentinc/cp-zookeeper"
     hostname: zookeeper
@@ -41,6 +47,24 @@ services:
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:32181
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
       - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT_HOST://localhost:29092,PLAINTEXT://kafka:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT_HOST://192.168.99.100:29092,PLAINTEXT://kafka:9092
       - KAFKA_BROKER_ID=1
+      - KAFKA_NUM_PARTITIONS=8
+      - KAFKA_LOG_RETENTION_HOURS=-1
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+  mongo-express:
+    image: mongo-express
+    restart: always
+    depends_on:
+      - mongo
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
 
