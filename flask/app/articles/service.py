@@ -41,7 +41,7 @@ def reconcile_articles():
                     soup = BeautifulSoup(data, 'html.parser')
                     print('Publishing article key: ' + entry.name)
                     article = Article({
-                                'title': soup.title.string,
+                                'title': soup.find_all('article-title')[0].string,
                                 'filename': entry.name,
                                 'html': data,
                                 'created_date': created_date.astimezone(tz=timezone.utc).isoformat(),

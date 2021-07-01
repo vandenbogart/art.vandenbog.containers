@@ -1,32 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import { useArticleData, useArticles } from './hooks/articles'
+import { useArticles } from './hooks/articles'
 
 import './dashboard.css'
+import { ArticleViewer } from './ArticleViewer';
 
 export const Dashboard = () => {
     const articlesMeta = useArticles();
-    const [selectedArticleFilename, setSelectedArticleFilename] = useState(null)
-    const selectedArticleData = useArticleData(selectedArticleFilename)
-
-    // Set iframe content when selected article changes
+    const [selectedArticleIndex, setSelectedArticleIndex] = useState(0)
+    // Initially set first article selected
     useEffect(() => {
-        if (selectedArticleData && selectedArticleData.data) {
-            const iframe = document.getElementById("dashboard__right__page-display")
-            iframe.contentWindow.document.open();
-            iframe.contentWindow.document.write(selectedArticleData.data.html);
-            iframe.contentWindow.document.close();
+        if (articlesMeta.data) {
+            articlesMeta.data.map((__, j) => {
+                const selected = document.getElementById(`menu__item-${j}`)
+                selected.classList.remove("dashboard__left__menu__item--selected") 
+            })
+            const selected = document.getElementById(`menu__item-${selectedArticleIndex}`)
+            selected.classList.add("dashboard__left__menu__item--selected")
         }
-    }, [selectedArticleData])
+    }, [articlesMeta.data, selectedArticleIndex])
 
     return (
         <div className="dashboard">
             <div className="dashboard__left">
                 <div className="dashboard__left__menu">
-                    {articlesMeta.data && articlesMeta.data.map(articleMeta => 
+                    <div className="dashboard__left__menu__logo">
+                        van
+                    </div>
+                    <div className="dashboard__left__menu__logo">
+                        den
+                    </div>
+                    <div className="dashboard__left__menu__logo">
+                        bog
+                    </div>
+                    {articlesMeta.data && articlesMeta.data.map((articleMeta, index) => 
                         <div className="dashboard__left__menu__item">
-                            <button onClick={() => setSelectedArticleFilename(articleMeta.filename)}>
+                            <a
+                                id={`menu__item-${index}`}
+                                className="dashboard__left__menu__item--normal"
+                                href=""
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    setSelectedArticleIndex(index);
+                                }}>
                                 {articleMeta.title}
-                            </button>
+                            </a>
                         </div>
                     )}
 
@@ -34,7 +51,10 @@ export const Dashboard = () => {
 
             </div>
             <div className="dashboard__right">
-                <iframe id="dashboard__right__page-display" className="dashboard__right__page-display-iframe"/>
+                {articlesMeta.data && <ArticleViewer
+                        articlesMeta={articlesMeta}
+                        selectedArticleIndex={selectedArticleIndex}
+                        setSelectedArticleIndex={setSelectedArticleIndex} />}
             </div>
 
         </div>
